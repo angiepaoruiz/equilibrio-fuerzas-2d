@@ -68,13 +68,13 @@ if result.success:
     forces = result.x
     st.success("Fuerzas encontradas que cumplen con las condiciones de equilibrio:")
     for i in range(len(forces)):
-        st.write(f"{names[i]} = {forces[i]:.2f} N")
+        st.write(f"{names[i]} = {forces[i]:.4f} N")
 
     # Verificación
     sumF = np.sum(forces)
     sumM = np.sum(np.array(forces) * np.array(positions))
-    st.info(f"∑F = {sumF:.2f} N")
-    st.info(f"∑M = {sumM:.2f} Nm")
+    st.info(f"∑F = {sumF:.4f} N")
+    st.info(f"∑M = {sumM:.4f} Nm")
 
     # Mostrar gráfico
     fig, ax = plt.subplots(figsize=(10, 4))
@@ -82,7 +82,7 @@ if result.success:
         x = positions[i]
         f = forces[i]
         ax.arrow(x, 0, 0, f / 10, head_width=0.2, head_length=0.5, fc='blue', ec='blue')
-        ax.text(x, f / 10 + 0.5, f"{names[i]} = {f:.2f} N", ha='center')
+        ax.text(x, f / 10 + 0.5, f"{names[i]} = {f:.4f} N", ha='center')
     ax.axhline(0, color='black', linewidth=0.5)
     ax.set_xlim(min(positions) - 1, max(positions) + 1)
     ax.set_ylim(-max(abs(np.array(forces))) / 5 - 2, max(abs(np.array(forces))) / 5 + 2)
