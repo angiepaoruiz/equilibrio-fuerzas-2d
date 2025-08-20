@@ -6,7 +6,6 @@ from scipy.optimize import minimize
 
 # Configuración de la página
 st.set_page_config(page_title="Equilibrio de Fuerzas 2D", layout="wide")
-
 st.title("Análisis de Equilibrio de Fuerzas en 2D")
 
 st.markdown("""
@@ -45,17 +44,25 @@ for i, force in enumerate(st.session_state.forces):
     positions.append(force["position"])
     names.append(force["name"])
 
-# Función objetivo para minimizar el error en equilibrio
+# Función objetivo
 def objective(F):
-    sumF = np.sum(F)
-    sumM = np.sum(np.array(F) * np.array(positions))
-    errorF = sumF**2
-    errorM = (sumM - moment_expected)**2
-    return errorF + errorM
+    return 0  # Solo se usan restricciones, no se minimiza nada específico
+
+# Restricciones
+def constraint_sumF(F):
+    return np.sum(F)
+
+def constraint_moment(F):
+    return np.sum(np.array(F) * np.array(positions)) - moment_expected
+
+constraints = [
+    {'type': 'eq', 'fun': constraint_sumF},
+    {'type': 'eq', 'fun': constraint_moment}
+]
 
 # Optimización
 initial_guess = [0.0] * len(positions)
-result = minimize(objective, initial_guess)
+result = minimize(objective, initial_guess, constraints=constraints)
 
 if result.success:
     forces = result.x
