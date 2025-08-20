@@ -46,18 +46,12 @@ for i, force in enumerate(st.session_state.forces):
 
 # Función objetivo
 def objective(F):
-    return 0  # Solo se usan restricciones, no se minimiza nada específico
+    return 0  # Solo se usan restricciones
 
-# Restricciones
-def constraint_sumF(F):
-    return np.sum(F)
-
-def constraint_moment(F):
-    return np.sum(np.array(F) * np.array(positions)) - moment_expected
-
+# Restricciones estrictas
 constraints = [
-    {'type': 'eq', 'fun': constraint_sumF},
-    {'type': 'eq', 'fun': constraint_moment}
+    {'type': 'eq', 'fun': lambda F: np.sum(F)},
+    {'type': 'eq', 'fun': lambda F: np.dot(F, positions) - moment_expected}
 ]
 
 # Optimización
@@ -72,9 +66,10 @@ if result.success:
 
     # Verificación
     sumF = np.sum(forces)
-    sumM = np.sum(np.array(forces) * np.array(positions))
+    sumM = np.dot(forces, positions)
     st.info(f"∑F = {sumF:.4f} N")
     st.info(f"∑M = {sumM:.4f} Nm")
+    st.info(f"Diferencia absoluta = {abs(sumM - moment_expected):.10f} Nm")
 
     # Mostrar gráfico
     fig, ax = plt.subplots(figsize=(10, 4))
