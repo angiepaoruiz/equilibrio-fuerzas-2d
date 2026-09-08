@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 # Configuración de la página
 st.set_page_config(
-    page_title="Distribución Rectangular de Fuerzas",
+    page_title="Distribución Rectangular",
     layout="wide"
 )
 
@@ -26,7 +26,7 @@ if "forces_rect" not in st.session_state:
         {"name": "F2", "position": 1.0}
     ]
 
-# Botones agregar/quitar
+# Botones
 col1, col2 = st.columns(2)
 
 with col1:
@@ -51,6 +51,7 @@ moment_expected = st.number_input(
     step=100.0
 )
 
+# Posiciones
 st.subheader("Posiciones de las fuerzas")
 
 positions = []
@@ -58,19 +59,19 @@ names = []
 
 for i, force in enumerate(st.session_state.forces_rect):
 
-    col_a, col_b = st.columns([1, 2])
+    c1, c2 = st.columns([1, 2])
 
-    with col_a:
+    with c1:
         force["name"] = st.text_input(
             f"Nombre {i+1}",
             value=force["name"],
             key=f"name_rect_{i}"
         )
 
-    with col_b:
+    with c2:
         force["position"] = st.number_input(
             f"Posición de {force['name']} (m)",
-            value=float(force["position"]),
+            value=force["position"],
             key=f"pos_rect_{i}"
         )
 
@@ -81,7 +82,6 @@ positions = np.array(positions)
 
 st.divider()
 
-# Separar posiciones
 left_idx = [i for i, x in enumerate(positions) if x < 0]
 right_idx = [i for i, x in enumerate(positions) if x > 0]
 
@@ -104,7 +104,6 @@ if st.button("Calcular distribución rectangular"):
         st.error("No es posible generar momento con esta geometría.")
         st.stop()
 
-    # Magnitud única para cada lado
     F = moment_expected / brazo_total
 
     forces = np.zeros(len(positions))
@@ -115,17 +114,15 @@ if st.button("Calcular distribución rectangular"):
     for i in right_idx:
         forces[i] = F
 
-    # Verificaciones
     sumF = np.sum(forces)
     sumM = np.dot(forces, positions)
 
-    st.success("Distribución rectangular calculada correctamente")
+    st.success("Distribución rectangular calculada")
 
     st.subheader("Resultados")
 
     for i in range(len(forces)):
-        st.write(
-            f"**{names[i]} = {forces[i]:.4f} N**      )
+        st.write(f"**{names[i]} = {forces.4f} N**")
 
     st.subheader("Verificación")
 
@@ -139,8 +136,8 @@ if st.button("Calcular distribución rectangular"):
     fig, ax = plt.subplots(figsize=(12, 5))
 
     max_force = (
-        np.max(np.abs(forces))
-        if np.max(np.abs(forces)) > 0
+        max(abs(forces))
+        if np.max(abs(forces)) > 0
         else 1
     )
 
